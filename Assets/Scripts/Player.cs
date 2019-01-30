@@ -9,16 +9,22 @@ public class Player : MonoBehaviour
     float yMove;
     float speedModifier = 1.75f;
 
-    public bool isRunning, invOpen, paused = false;
+    public bool isRunning, invOpen, paused, isWalking, isWalkingVertically, isWalkingUp, isWalkingDown = false;
 
     public GameObject camManager, targetCam, uiManager;
 
+    public Sprite front, back, side;
+
+    public int xDir, yDir;
+
     Rigidbody2D rb;
+    Animator anim;
 
     // Start is called before the first frame update
     void Start()
     {
         rb = gameObject.GetComponent<Rigidbody2D>();
+        anim = gameObject.GetComponent<Animator>();
     }
 
     // Update is called once per frame
@@ -41,17 +47,52 @@ public class Player : MonoBehaviour
 
         if (!paused)
         {
+            Debug.Log(isWalkingDown);
+            Debug.Log(isWalkingUp);
             xMove = Input.GetAxis("Horizontal");
             yMove = Input.GetAxis("Vertical");
 
             if (xMove == 0)
             {
                 rb.velocity = new Vector2(0, yMove * playerSpeed);
+                isWalking = false;
             }
 
             if (yMove == 0)
             {
                 rb.velocity = new Vector2(xMove * playerSpeed, 0);
+                anim.SetBool("isWalkingUp", false);
+                anim.SetBool("isWalkingDown", false);
+                isWalkingDown = false;
+                isWalkingUp = false;
+            }
+
+            if (xMove > 0)
+            {
+                isWalking = true;
+                gameObject.GetComponent<SpriteRenderer>().flipX = false;
+            }
+            else if (xMove < 0)
+            {
+                gameObject.GetComponent<SpriteRenderer>().flipX = true;
+                isWalking = true;
+            }
+
+            anim.SetBool("isWalking", isWalking);
+
+            if (yMove > 0)
+            {
+                isWalkingUp = true;
+                isWalkingDown = false;
+                anim.SetBool("isWalkingUp", isWalkingUp);
+                anim.SetBool("isWalkingDown", isWalkingDown);
+            }
+            else if (yMove < 0)
+            {
+                isWalkingUp = false;
+                isWalkingDown = true;
+                anim.SetBool("isWalkingUp", isWalkingUp);
+                anim.SetBool("isWalkingDown", isWalkingDown);
             }
 
             if (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift) && !isRunning)
