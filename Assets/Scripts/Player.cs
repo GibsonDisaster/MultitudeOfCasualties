@@ -11,6 +11,8 @@ public class Player : MonoBehaviour
 
     public bool isRunning = false;
 
+    public GameObject camManager, targetCam;
+
     Rigidbody2D rb;
 
     // Start is called before the first frame update
@@ -51,6 +53,11 @@ public class Player : MonoBehaviour
         else
         {
             playerSpeed = 4f;
+        }
+
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            gameObject.transform.position.Set(-8, 54, 0);
         }
 
         rb.velocity = new Vector2(xMove * playerSpeed, yMove * playerSpeed);
